@@ -77,41 +77,69 @@ git lola
 ```
 がターミナルで使えるようになる
 
+
+
  ### コマンド事例と説明
  [【Git】基本コマンド](https://qiita.com/konweb/items/621722f67fdd8f86a017)
  #### ローカルリポジトリの作成
+ - git init //初期化
+ - git add * //現在あるファイル全部追加
+ - git commit -m "initial commit" //コミット
+
+### リモートリポジトリからプロジェクトをコピー
+ - cd [ローカルリポジトリのパス]
+ - git clone [リモートリポジトリパス] 
+例）git@github.com:514daisuke/GitHub.git
+
+#### ファイル更新までの基本手順
+ -  git add [変更/追加したファイル名]
+    - git add .（全部あげてもいい）
+ - git commit -m"コメント" // ファイルをコミット
+ - git push origin 【branch名】//※Topicブランチが多い/ ファイルを更新
+
+#### git addの使用例
+ - git add . //すべてのファイル・ディレクトリ
+ - git add *.css //すべてのCSSファイル
+ - git add -n //追加されるファイルを調べる
+ - git add -u //変更されたファイルを追加する
+ - git rm --cached //addしてしまったファイルを除外
+#### addの取り消し
+ - 間違えてgit addしてしまった場合はresetでキャンセルできる。
+ - git reset HEAD
+ - git reset HEAD {file_name}
+
+#### git commitの使用例
+ - git commit -a //変更のあったファイルすべて
+ - git commit --amend //直前のコミットを取り消す
+ - git commit -v //変更点を表示してコミット
+
+#### commitの取り消し
+ - git reset --soft HEAD~2 // 最新のコミットから2件分をワークディレクトリの内容を保持し取り消す
+ - git reset --hard HEAD~2 // 最新のコミットから2件分のワークディレクトリの内容とコミットを取り消す
+
+#### commitメッセージの修正
+ - git rebase -i HEAD~2 // HEADから2件のコミットメッセージ
+ - pick {commit_id} {commit_meessage} // 2件目
+ - pick {commit_id} {commit_meessage} // 1件目(最新コミット)
+ - git commit --amend
+ - git rebase --continue
 
 
- #### 
- - git branch -a
- - git branch -m develop develop_old
- - git branch -d ブランチ名
- - git branch -D ブランチ名
- #### 
- - git log -p
- - git log --oneline
+ #### ブランチの作成/移動/削除/変更/一覧
+ - git branch [branch_name]  //ブランチの作成 
+ - git checkout [branch_name]  //ブランチの移動
+ - git branch -d [branch_name]  //ブランチの削除
+ - git branch -m [branch_name]  //現在のブランチ名の変更
+ - git branch // ローカルブランチの一覧
+ - git branch -a //リモートとローカルのブランチの一覧
+ - git branch -r //リモートブランチの一覧
+ - git checkout -b branch_name origin/branch_name //リモートブランチへチェックアウト
 
+ #### リモートブランチの確認（urlも表示）
  -  git remote -v
 
- #### 
- - git add .
- - git commit -m"コメント"
- - git push
 
- #### 
- - git checkout 【branch名】
- - git checkout -b 【branch名】
- - git checkout -t origin/develop
-
- #### 
- - git stash
-
- #### 
- - git reflog
- - git reset --hard HEAD{ }
-
-
-#### マージ作業
+#### 編集をマージ
  - git checkout branch名（Topicブランチに切り替え）
  - git pull origin develop（リモートdevelopから最新の情報をpull）
  - git merge --no-ff develop（Topicブランチ作業にdevelopブランチをマージ）
@@ -119,10 +147,61 @@ git lola
  - git checkout develop（develop環境切り替え）
  - git merge --no-ff  branch名（Topicブランチ作業しているブランチのマージ）
 
+##### staging環境（本流）にマージ
  - git checkout staging
  - git merge --no-ff develop
  - git push
  - git log -p
+
+
+ #### マージの取り消し
+- git merge --abort
+コンフリクトが発生して一旦戻したい場合
+
+ #### ブランチを切り替える
+ - git checkout 【branch名】
+ - git checkout -b 【branch名】//新しいブランチを作成して移動する
+ - git checkout -t origin/develop // 名前の
+
+ #### 今やってる作業を一時退避する
+ - git stash
+ - git stash pop //戻す場合
+ - git stash list //退避の一覧
+ - git stash clear //退避の消去
+
+ #### ログ表示
+ - git log //コミットのログが見れる
+ - git log -p
+ - git log --oneline
+ - git reflog //いろいろ見れる
+ - git reflog origin/branch_name //pushのログが見れる
+
+#### ファイル名変更
+ - git mv [変更前のファイル名] [変更後のファイル名]
+ - git commit -a -m "rename"
+ - git push origin master
+
+
+
+ #### 差分チェック
+ - git diff
+ - git diff HEAD^ //最後のコミットからの差分を表示
+ - git diff --name-only HEAD^ //差分ファイルを表示
+ - git diff file1.txt file2.txt //特定フィイルの差分
+ - git diff commit1 commit2 //コミットの差分
+
+
+#### コンフリクトの解消
+##### 手動で解決する場合
+ - コンフリクトを解消しファイルを保存後、下記のコマンドを実行
+ - git add {file_name}
+ - git commit {file_name} -m "コミットメッセージ"
+##### 自動で解決する場合
+##### 現在のブランチを正とする
+ - git checkout --ours {fime_name}
+#### マージで指定したブランチを正とする
+ - git checkout --theirs {fime_name}
+
 
 ### 参考サイト
 [git](https://git-scm.com/book/ja/v2/%E4%BD%BF%E3%81%84%E5%A7%8B%E3%82%81%E3%82%8B-%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E7%AE%A1%E7%90%86%E3%81%AB%E9%96%A2%E3%81%97%E3%81%A6)
